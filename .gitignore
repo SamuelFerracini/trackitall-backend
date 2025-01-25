@@ -1,0 +1,5 @@
+node_modules
+.vscode
+aupost-example.json
+tsexpress-example.json
+.env

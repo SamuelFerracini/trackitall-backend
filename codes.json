@@ -1,0 +1,16 @@
+[
+  {
+    "code": "LP123681826AU",
+    "provider": "auspost",
+    "children": [
+      {
+        "code": "828963166231",
+        "provider": "jtexpress"
+      },
+      {
+        "code": "828958988034",
+        "provider": "jtexpress"
+      }
+    ]
+  }
+]
