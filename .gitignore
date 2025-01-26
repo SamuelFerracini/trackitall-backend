@@ -3,3 +3,4 @@ node_modules
 aupost-example.json
 tsexpress-example.json
 .env
+.idea

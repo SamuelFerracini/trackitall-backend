@@ -1,6 +1,6 @@
-import AxiosService from "../services/AxiosService";
-import FileManager from "../services/FileManagerService";
-import BaseCourier, { IParcelHistory } from "./BaseCourier";
+import AxiosService from "../services/axiosService";
+import FileManager from "../services/fileManagerService";
+import BaseCourier, { IParcelHistory } from "./baseCourier";
 
 interface IReponseDataDetail {
   remark: string | null;
@@ -31,7 +31,7 @@ interface IResponse {
   data: IReponseData;
 }
 
-export default class JTExpress extends BaseCourier {
+export default class JteExpress extends BaseCourier {
   axiosService: AxiosService;
 
   constructor() {
@@ -45,9 +45,16 @@ export default class JTExpress extends BaseCourier {
 
   _formatResponse(response: IResponse): IParcelHistory[] {
     return response.data.details.map((e) => {
+      const descriptions = [];
+
+      if (e.deliveryPhone) {
+        descriptions.push(`Courier phone number: ${e.deliveryPhone}`);
+      }
+
       return {
         date: new Date(e.scanTime).toISOString(),
-        description: e.scanStatus,
+        status: e.scanStatus,
+        description: descriptions.join(". "),
         location: `${e.city}, ${e.area}, ${e.town}`,
       };
     });
@@ -67,8 +74,6 @@ export default class JTExpress extends BaseCourier {
     const response = {
       data: JSON.parse(t),
     };
-
-    debugger;
 
     return this._formatResponse(response.data);
   }

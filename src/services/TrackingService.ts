@@ -1,56 +1,45 @@
-import Courier from "../enums/CourierEnum";
-import { CourierFactory } from "../providers/CourierFactory";
-
-interface TrackingCode {
-  code: string;
-  provider: string;
-  children?: TrackingCode[];
-}
+import { CourierService } from "./courierService";
+import { TrackingRepository } from "../repositories/trackingRepository";
+import { ITrackingCode, ITrackingHistory } from "../interfaces/tracking";
+import { invertTrackingCodes } from "../helpers/trackingHelper";
+import { generateUniqueCode } from "../helpers/helper";
 
 export default class TrackingService {
-  async processTrackingCodes(codes: TrackingCode[]): Promise<any[]> {
-    const result: any[] = [];
+  private trackingRepository: TrackingRepository;
+  private courierService: CourierService;
 
-    for (const codeObj of codes) {
-      const processedCode = await this.fetchHistoryAndProcessChildren(codeObj);
-      result.push(processedCode);
-    }
-
-    debugger;
-
-    return result;
+  constructor() {
+    this.trackingRepository = new TrackingRepository();
+    this.courierService = new CourierService();
   }
 
-  private async fetchHistoryAndProcessChildren(
-    codeObj: TrackingCode
-  ): Promise<any> {
-    try {
-      const instance = CourierFactory.make(codeObj.provider as Courier);
+  async processTrackingCodes(
+    codes: ITrackingCode[]
+  ): Promise<ITrackingHistory[]> {
+    const result = await Promise.all(
+      codes.map((code) =>
+        this.courierService.fetchHistoryAndProcessChildren(code)
+      )
+    );
+    return invertTrackingCodes(result);
+  }
 
-      const history = await instance.getParcelHistory(codeObj.code);
+  async saveTracking(fullCode: string, result: any): Promise<void> {
+    const existingRecord = await this.trackingRepository.getOne({
+      id: fullCode,
+    });
 
-      const children = codeObj.children
-        ? await Promise.all(
-            codeObj.children.map((child) =>
-              this.fetchHistoryAndProcessChildren(child)
-            )
-          )
-        : [];
-
-      return {
-        code: codeObj.code,
-        provider: codeObj.provider,
-        history,
-        children,
-      };
-    } catch (error) {
-      console.error(`Error processing code ${codeObj.code}:`, error);
-      return {
-        code: codeObj.code,
-        provider: codeObj.provider,
-        history: null,
-        children: [],
-      };
+    if (existingRecord) {
+      await this.trackingRepository.updateOne(
+        { id: fullCode },
+        { data: result }
+      );
+    } else {
+      await this.trackingRepository.create({
+        id: fullCode,
+        reference: generateUniqueCode(),
+        data: result,
+      });
     }
   }
 }

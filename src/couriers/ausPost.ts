@@ -1,6 +1,6 @@
-import BrowserService from "../services/BrowserService";
-import FileManagerService from "../services/FileManagerService";
-import BaseCourier, { IParcelHistory } from "./BaseCourier";
+import BrowserService from "../services/browserService";
+import FileManagerService from "../services/fileManagerService";
+import BaseCourier, { IParcelHistory } from "./baseCourier";
 
 interface IResponseArticleDetailEvent {
   dateTime: number;
