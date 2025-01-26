@@ -11,6 +11,13 @@ class BaseController {
       data,
     });
   }
+
+  protected notFound(res: Response): any {
+    res.status(404).json({
+      success: false,
+      error: "Not found",
+    });
+  }
 }
 
 export default BaseController;

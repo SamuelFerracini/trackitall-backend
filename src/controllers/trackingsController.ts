@@ -13,7 +13,8 @@ class TrackingsController extends BaseController {
     const tracking = await TrackingService.getOne({ reference });
 
     if (!tracking) {
-      throw new Error("Not found");
+      this.notFound(res);
+      return;
     }
 
     this.jsonResponse(res, TrackingTransformer.transform(tracking));

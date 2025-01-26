@@ -3,19 +3,28 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { connectToDatabase } from "./database/mongo";
-import trackingRoutes from "./routes/trackingRoutes";
 
 import express from "express";
-import cors from "cors";
+import { registerRoutes } from "./routes";
+
+import rateLimit from "express-rate-limit";
 
 async function setup() {
   await connectToDatabase();
 
   const app = express();
 
-  app.use(cors());
-  app.use(express.json());
-  app.use("/", trackingRoutes);
+  const limiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 15 minutes in milliseconds
+    max: 5, // Limit each IP to 100 requests per windowMs
+    message: "Too many requests from this IP, please try again after later",
+    standardHeaders: true, // Include rate limit info in the response headers
+    legacyHeaders: false, // Disable X-RateLimit-* headers
+  });
+
+  app.use(limiter);
+
+  registerRoutes(app);
 
   const PORT = process.env.PORT || 3000;
 
