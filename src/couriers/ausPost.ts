@@ -64,7 +64,7 @@ export default class AusPostProvider extends BaseCourier {
     return JSON.parse(res?.toString());
   }
 
-  async getParcelHistory(code: string): Promise<IParcelHistory[]> {
+  async getOrderHistoryEvents(code: string): Promise<IParcelHistory[]> {
     const postResponse = await this._getParcelHistory(code);
 
     if (!postResponse) {

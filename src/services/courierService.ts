@@ -1,27 +1,10 @@
 import Courier from "../enums/courierType";
 import { CourierFactory } from "../couriers/courierFactory";
-import { ITrackingCode, ITrackingHistory } from "../interfaces/tracking";
+// import { ITrackingHistoryDataEvent } from "../models/trackingHistory";
 
-export class CourierService {
-  async fetchHistoryAndProcessChildren(
-    codeObj: ITrackingCode
-  ): Promise<ITrackingHistory> {
-    try {
-      const instance = CourierFactory.make(codeObj.provider as Courier);
-      const history = await instance.getParcelHistory(codeObj.code);
-
-      const children = codeObj.children
-        ? await Promise.all(
-            codeObj.children.map((child) =>
-              this.fetchHistoryAndProcessChildren(child)
-            )
-          )
-        : [];
-
-      return { ...codeObj, history, children };
-    } catch (error) {
-      console.error(`Error processing code ${codeObj.code}:`, error);
-      return { ...codeObj, history: [], children: [] };
-    }
+export default class CourierService {
+  async fetchEventHistory(code: string, courier: Courier): Promise<void> {
+    // const instance = CourierFactory.make(courier);
+    // return await instance.getOrderHistoryEvents(code);
   }
 }

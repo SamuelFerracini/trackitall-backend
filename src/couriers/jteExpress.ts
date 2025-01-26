@@ -60,7 +60,7 @@ export default class JteExpress extends BaseCourier {
     });
   }
 
-  async getParcelHistory(code: string): Promise<IParcelHistory[]> {
+  async getOrderHistoryEvents(code: string): Promise<IParcelHistory[]> {
     // const response = await this.axiosService.post<IResponse>("", {
     //   billCode: code,
     //   lang: "en",

@@ -1,9 +1,5 @@
-export interface IParcelHistory {
-  description: string;
-  date: string;
-  location: string;
-}
+import { ITrackingHistoryDataEvent } from "../models/trackingHistory";
 
 export default abstract class BaseCourier {
-  abstract getParcelHistory(code: string): Promise<IParcelHistory[]>;
+  abstract getOrderHistoryEvents(code: string): Promise<ITrackingHistoryDataEvent[]>;
 }

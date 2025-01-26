@@ -21,11 +21,11 @@ export function extractCodes(
   return codes;
 }
 
-export function generateUniqueCode() {
+export function generateUniqueCode(length = 12) {
   const chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let code = "";
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * chars.length);
     code += chars[randomIndex];
   }

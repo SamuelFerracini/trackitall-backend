@@ -1,7 +1,8 @@
-import { CourierService } from "./courierService";
+import CourierService from "./courierService";
 import { TrackingRepository } from "../repositories/trackingRepository";
 import { ITrackingCode, ITrackingHistory } from "../interfaces/tracking";
-import { invertTrackingCodes } from "../helpers/trackingHelper";
+import { ITracking } from "../models/tracking";
+import { FilterQuery } from "mongoose";
 import { generateUniqueCode } from "../helpers/helper";
 
 export default class TrackingService {
@@ -16,30 +17,43 @@ export default class TrackingService {
   async processTrackingCodes(
     codes: ITrackingCode[]
   ): Promise<ITrackingHistory[]> {
-    const result = await Promise.all(
-      codes.map((code) =>
-        this.courierService.fetchHistoryAndProcessChildren(code)
-      )
-    );
-    return invertTrackingCodes(result);
+    return [];
+    // const result = await Promise.all(
+    //   codes.map((code) =>
+    //     this.courierService.fetchHistoryAndProcessChildren(code)
+    //   )
+    // );
+    // return invertTrackingCodes(result);
   }
 
-  async saveTracking(fullCode: string, result: any): Promise<void> {
-    const existingRecord = await this.trackingRepository.getOne({
-      id: fullCode,
-    });
+  async create(orderIds: string[]): Promise<ITracking | undefined> {
+    const found = await this.trackingRepository.getOne({ orderIds });
+    if (found) return found;
 
-    if (existingRecord) {
-      await this.trackingRepository.updateOne(
-        { id: fullCode },
-        { data: result }
-      );
-    } else {
-      await this.trackingRepository.create({
-        id: fullCode,
-        reference: generateUniqueCode(),
-        data: result,
+    let tries = 0;
+
+    while (tries < 3) {
+      const reference = generateUniqueCode();
+
+      const codeDuplicated = await this.trackingRepository.getOne({
+        reference,
       });
+
+      if (!codeDuplicated) {
+        return this.trackingRepository.create({ reference, orderIds });
+      }
+
+      tries++;
     }
+
+    throw new Error("Cannot create unique id");
+  }
+
+  async getOne(filter: FilterQuery<ITracking>): Promise<ITracking | null> {
+    return await this.trackingRepository.getOne(filter);
+  }
+
+  async getMany(filter: FilterQuery<ITracking> = {}): Promise<ITracking[]> {
+    return await this.trackingRepository.getMany(filter);
   }
 }

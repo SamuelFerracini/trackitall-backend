@@ -13,7 +13,11 @@ export class BaseRepository<T extends Document> {
    * @returns The created document.
    */
   async create(data: Partial<T>): Promise<T> {
-    const document = new this.model(data);
+    const document = new this.model({
+      ...data,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
     return await document.save();
   }
 
@@ -55,7 +59,11 @@ export class BaseRepository<T extends Document> {
     update: UpdateQuery<T>
   ): Promise<T | null> {
     return await this.model
-      .findOneAndUpdate(filter, update, { new: true })
+      .findOneAndUpdate(
+        filter,
+        { ...update, updatedAt: new Date().toISOString() },
+        { new: true }
+      )
       .exec();
   }
 
