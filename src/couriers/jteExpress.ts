@@ -61,19 +61,11 @@ export default class JteExpress extends BaseCourier {
   }
 
   async getOrderHistoryEvents(code: string): Promise<IHistoryEvent[]> {
-    // const response = await this.axiosService.post<IResponse>("", {
-    //   billCode: code,
-    //   lang: "en",
-    //   phoneVerify: process.env.LAST_4,
-    // });
-
-    const t = (
-      await FileManager.readFile("./tsexpress-example.json")
-    )?.toString() as string;
-
-    const response = {
-      data: JSON.parse(t),
-    };
+    const response = await this.axiosService.post<IResponse>("", {
+      billCode: code,
+      lang: "en",
+      phoneVerify: process.env.LAST_4,
+    });
 
     return this._formatResponse(response.data);
   }
