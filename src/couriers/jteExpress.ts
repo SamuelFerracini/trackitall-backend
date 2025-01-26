@@ -1,6 +1,6 @@
 import AxiosService from "../services/axiosService";
 import FileManager from "../services/fileManagerService";
-import BaseCourier, { IParcelHistory } from "./baseCourier";
+import BaseCourier, { IHistoryEvent } from "./baseCourier";
 
 interface IReponseDataDetail {
   remark: string | null;
@@ -43,7 +43,7 @@ export default class JteExpress extends BaseCourier {
     });
   }
 
-  _formatResponse(response: IResponse): IParcelHistory[] {
+  _formatResponse(response: IResponse): IHistoryEvent[] {
     return response.data.details.map((e) => {
       const descriptions = [];
 
@@ -60,7 +60,7 @@ export default class JteExpress extends BaseCourier {
     });
   }
 
-  async getOrderHistoryEvents(code: string): Promise<IParcelHistory[]> {
+  async getOrderHistoryEvents(code: string): Promise<IHistoryEvent[]> {
     // const response = await this.axiosService.post<IResponse>("", {
     //   billCode: code,
     //   lang: "en",

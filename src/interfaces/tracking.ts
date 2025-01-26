@@ -1,5 +1,4 @@
-// interfaces/tracking.ts
-import { IParcelHistory } from "../couriers/baseCourier";
+import { IHistoryEvent } from "../couriers/baseCourier";
 
 export interface ITrackingCode {
   code: string;
@@ -8,5 +7,5 @@ export interface ITrackingCode {
 }
 
 export interface ITrackingHistory extends ITrackingCode {
-  history: IParcelHistory[];
+  history: IHistoryEvent[];
 }

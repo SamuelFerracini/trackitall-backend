@@ -10,7 +10,7 @@ export interface IOrderEvents {
 
 export interface IOrder extends Document {
   code: string;
-  courier: string;
+  courier: Courier;
   events: IOrderEvents[];
   createdAt: string;
   updatedAt: string;

@@ -1,12 +1,20 @@
 import { ITracking } from "../models/tracking";
 import BaseTransformer from "./baseTransformer";
+import OrderTransformer from "./orderTransformer";
 
-class TrackingResource extends BaseTransformer {
-  // transform(tracking: ITracking): any {
-  //   return {
-  //     history: tracking.history
-  //   };
-  // }
+class TrackingTransformer extends BaseTransformer {
+  constructor() {
+    super();
+  }
+
+  transform(tracking: ITracking): Partial<object> {
+    return {
+      reference: tracking.reference,
+      created_at: tracking.createdAt,
+      updated_at: tracking.updatedAt,
+      orders: OrderTransformer.transformCollection(tracking.orders),
+    };
+  }
 }
 
-export default TrackingResource;
+export default new TrackingTransformer();

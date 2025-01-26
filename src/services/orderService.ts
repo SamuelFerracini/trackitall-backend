@@ -1,15 +1,9 @@
-import { OrderRepository } from "../repositories/orderRepository";
+import OrderRepository from "../repositories/orderRepository";
 import { IOrder } from "../models/order";
 
-export default class OrderService {
-  private orderRepository: OrderRepository;
-
-  constructor() {
-    this.orderRepository = new OrderRepository();
-  }
-
+class OrderService {
   async create({ code, courier }: Partial<IOrder>): Promise<IOrder> {
-    return await this.orderRepository.create({
+    return await OrderRepository.create({
       code,
       courier,
       createdAt: new Date().toISOString(),
@@ -37,13 +31,13 @@ export default class OrderService {
   }
 
   async firstOrCreate({ code, courier }: Partial<IOrder>): Promise<IOrder> {
-    const found = await this.orderRepository.getOne({ code, courier });
+    const found = await OrderRepository.getOne({ code, courier });
 
     if (found) {
       return found;
     }
 
-    return await this.orderRepository.create({
+    return await OrderRepository.create({
       code,
       courier,
       createdAt: new Date().toISOString(),
@@ -51,3 +45,5 @@ export default class OrderService {
     });
   }
 }
+
+export default new OrderService();

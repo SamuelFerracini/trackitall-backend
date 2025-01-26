@@ -1,5 +1,12 @@
-import { ITrackingHistoryDataEvent } from "../models/trackingHistory";
+import {} from "../interfaces/tracking";
+
+export interface IHistoryEvent {
+  date: string;
+  description: string;
+  status: string | null;
+  location: string;
+}
 
 export default abstract class BaseCourier {
-  abstract getOrderHistoryEvents(code: string): Promise<ITrackingHistoryDataEvent[]>;
+  abstract getOrderHistoryEvents(code: string): Promise<IHistoryEvent[]>;
 }

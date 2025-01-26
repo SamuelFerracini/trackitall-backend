@@ -1,5 +1,9 @@
 import { Document, Model, FilterQuery, UpdateQuery } from "mongoose";
 
+export interface IFilterOption {
+  populate: string[];
+}
+
 export class BaseRepository<T extends Document> {
   private model: Model<T>;
 
@@ -26,8 +30,11 @@ export class BaseRepository<T extends Document> {
    * @param filter - The filter to find the document.
    * @returns The found document or null.
    */
-  async getOne(filter: FilterQuery<T>): Promise<T | null> {
-    return await this.model.findOne(filter).exec();
+  async getOne(
+    filter: FilterQuery<T>,
+    options: IFilterOption = { populate: [] }
+  ): Promise<T | null> {
+    return await this.model.findOne(filter).populate(options.populate).exec();
   }
 
   /**
@@ -40,9 +47,16 @@ export class BaseRepository<T extends Document> {
   async getMany(
     filter: FilterQuery<T>,
     limit?: number,
-    skip?: number
+    skip?: number,
+    options: IFilterOption = {
+      populate: [],
+    }
   ): Promise<T[]> {
     const query = this.model.find(filter);
+
+    if (options.populate?.length > 0) {
+      query.populate(options.populate);
+    }
     if (limit) query.limit(limit);
     if (skip) query.skip(skip);
     return await query.exec();

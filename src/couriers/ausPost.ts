@@ -1,6 +1,6 @@
 import BrowserService from "../services/browserService";
 import FileManagerService from "../services/fileManagerService";
-import BaseCourier, { IParcelHistory } from "./baseCourier";
+import BaseCourier, { IHistoryEvent } from "./baseCourier";
 
 interface IResponseArticleDetailEvent {
   dateTime: number;
@@ -37,16 +37,17 @@ export default class AusPostProvider extends BaseCourier {
     this.browserService = new BrowserService();
   }
 
-  _formatResponse(response: IResponse): IParcelHistory[] {
+  _formatResponse(response: IResponse): IHistoryEvent[] {
     const [article] = response.articles;
 
     const [detail] = article.details;
 
-    const history: IParcelHistory[] = detail.events.map((e) => {
+    const history: IHistoryEvent[] = detail.events.map((e) => {
       return {
         description: e.description,
         date: new Date(e.dateTime).toISOString(),
         location: e.location,
+        status: null,
       };
     });
 
@@ -64,7 +65,7 @@ export default class AusPostProvider extends BaseCourier {
     return JSON.parse(res?.toString());
   }
 
-  async getOrderHistoryEvents(code: string): Promise<IParcelHistory[]> {
+  async getOrderHistoryEvents(code: string): Promise<IHistoryEvent[]> {
     const postResponse = await this._getParcelHistory(code);
 
     if (!postResponse) {

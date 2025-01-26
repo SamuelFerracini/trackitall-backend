@@ -1,8 +1,9 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
+import { IOrder } from "./order";
 
 export interface ITracking extends Document {
   reference: string;
-  orderIds: Array<string>;
+  orders: Array<IOrder | string>;
   createdAt: string;
   updatedAt: string;
 }
@@ -14,10 +15,7 @@ const TrackingSchema = new mongoose.Schema({
     unique: true,
   },
 
-  orderIds: {
-    type: Array<string>,
-    required: true,
-  },
+  orders: [{ type: Schema.Types.ObjectId, ref: "Order" }],
 
   createdAt: {
     type: String,
@@ -29,5 +27,8 @@ const TrackingSchema = new mongoose.Schema({
     required: true,
   },
 });
+
+TrackingSchema.set("toObject", { virtuals: true });
+TrackingSchema.set("toJSON", { virtuals: true });
 
 export default mongoose.model("Tracking", TrackingSchema);

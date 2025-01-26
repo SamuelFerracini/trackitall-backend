@@ -1,33 +1,11 @@
-import CourierService from "./courierService";
-import { TrackingRepository } from "../repositories/trackingRepository";
-import { ITrackingCode, ITrackingHistory } from "../interfaces/tracking";
+import TrackingRepository from "../repositories/trackingRepository";
 import { ITracking } from "../models/tracking";
 import { FilterQuery } from "mongoose";
 import { generateUniqueCode } from "../helpers/helper";
 
-export default class TrackingService {
-  private trackingRepository: TrackingRepository;
-  private courierService: CourierService;
-
-  constructor() {
-    this.trackingRepository = new TrackingRepository();
-    this.courierService = new CourierService();
-  }
-
-  async processTrackingCodes(
-    codes: ITrackingCode[]
-  ): Promise<ITrackingHistory[]> {
-    return [];
-    // const result = await Promise.all(
-    //   codes.map((code) =>
-    //     this.courierService.fetchHistoryAndProcessChildren(code)
-    //   )
-    // );
-    // return invertTrackingCodes(result);
-  }
-
-  async create(orderIds: string[]): Promise<ITracking | undefined> {
-    const found = await this.trackingRepository.getOne({ orderIds });
+class TrackingService {
+  async create(orders: string[]): Promise<ITracking | undefined> {
+    const found = await TrackingRepository.getOne({ orders });
     if (found) return found;
 
     let tries = 0;
@@ -35,12 +13,12 @@ export default class TrackingService {
     while (tries < 3) {
       const reference = generateUniqueCode();
 
-      const codeDuplicated = await this.trackingRepository.getOne({
+      const codeDuplicated = await TrackingRepository.getOne({
         reference,
       });
 
       if (!codeDuplicated) {
-        return this.trackingRepository.create({ reference, orderIds });
+        return TrackingRepository.create({ reference, orders });
       }
 
       tries++;
@@ -50,10 +28,16 @@ export default class TrackingService {
   }
 
   async getOne(filter: FilterQuery<ITracking>): Promise<ITracking | null> {
-    return await this.trackingRepository.getOne(filter);
+    return await TrackingRepository.getOne(filter, {
+      populate: ["orders"],
+    });
   }
 
   async getMany(filter: FilterQuery<ITracking> = {}): Promise<ITracking[]> {
-    return await this.trackingRepository.getMany(filter);
+    return await TrackingRepository.getMany(filter, undefined, undefined, {
+      populate: ["orders"],
+    });
   }
 }
+
+export default new TrackingService();
