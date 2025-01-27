@@ -1,5 +1,5 @@
 import CourierType from "../enums/courierType";
-import AusPostProvider from "./ausPost";
+// import AusPostProvider from "./ausPost";
 import BaseCourier from "./baseCourier";
 import JteExpress from "./jteExpress";
 

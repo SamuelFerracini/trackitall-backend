@@ -1,100 +1,100 @@
-import BrowserService from "../services/browserService";
-import FileManagerService from "../services/fileManagerService";
-import BaseCourier, { IHistoryEvent } from "./baseCourier";
+// import BrowserService from "../services/browserService";
+// import FileManagerService from "../services/fileManagerService";
+// import BaseCourier, { IHistoryEvent } from "./baseCourier";
 
-interface IResponseArticleDetailEvent {
-  dateTime: number;
-  localeDateTime: string;
-  description: string;
-  location: string;
-  eventCode: string;
-  wcid: string;
-  toWcid: string | null;
-  readyToCollectDateTime: string | null;
-  milestone: string;
-  hasLocationDualName: boolean;
-}
+// interface IResponseArticleDetailEvent {
+//   dateTime: number;
+//   localeDateTime: string;
+//   description: string;
+//   location: string;
+//   eventCode: string;
+//   wcid: string;
+//   toWcid: string | null;
+//   readyToCollectDateTime: string | null;
+//   milestone: string;
+//   hasLocationDualName: boolean;
+// }
 
-interface IResponseArticleDetail {
-  events: IResponseArticleDetailEvent[];
-}
+// interface IResponseArticleDetail {
+//   events: IResponseArticleDetailEvent[];
+// }
 
-interface IResponseArticle {
-  details: IResponseArticleDetail[];
-}
+// interface IResponseArticle {
+//   details: IResponseArticleDetail[];
+// }
 
-interface IResponse {
-  status: string;
-  articles: IResponseArticle[];
-}
+// interface IResponse {
+//   status: string;
+//   articles: IResponseArticle[];
+// }
 
-export default class AusPostProvider extends BaseCourier {
-  browserService: BrowserService;
+// export default class AusPostProvider extends BaseCourier {
+//   browserService: BrowserService;
 
-  constructor() {
-    super();
+//   constructor() {
+//     super();
 
-    this.browserService = new BrowserService();
-  }
+//     this.browserService = new BrowserService();
+//   }
 
-  _formatResponse(response: IResponse): IHistoryEvent[] {
-    if (!response.articles) {
-      return [];
-    }
+//   _formatResponse(response: IResponse): IHistoryEvent[] {
+//     if (!response.articles) {
+//       return [];
+//     }
 
-    const [article] = response.articles;
+//     const [article] = response.articles;
 
-    const [detail] = article.details;
+//     const [detail] = article.details;
 
-    const history: IHistoryEvent[] = detail.events.map((e) => {
-      return {
-        description: e.description,
-        date: new Date(e.dateTime).toISOString(),
-        location: e.location,
-        status: null,
-      };
-    });
+//     const history: IHistoryEvent[] = detail.events.map((e) => {
+//       return {
+//         description: e.description,
+//         date: new Date(e.dateTime).toISOString(),
+//         location: e.location,
+//         status: null,
+//       };
+//     });
 
-    return history;
-  }
+//     return history;
+//   }
 
-  async _getParcelHistory(code: string): Promise<IResponse | null> {
-    await this.browserService.initialize();
+//   async _getParcelHistory(code: string): Promise<IResponse | null> {
+//     await this.browserService.initialize();
 
-    let b: IResponse | null = null;
+//     let b: IResponse | null = null;
 
-    const responsePromise = new Promise<IResponse | null>((resolve) => {
-      this.browserService.setupResponseListener(
-        `https://digitalapi.auspost.com.au/shipments-gateway/v1/watchlist/shipments/${code}`,
-        (data) => {
-          b = data;
-          resolve(b);
-        }
-      );
-    });
+//     const responsePromise = new Promise<IResponse | null>((resolve) => {
+//       this.browserService.setupResponseListener(
+//         `https://digitalapi.auspost.com.au/shipments-gateway/v1/watchlist/shipments/${code}`,
+//         (data) => {
+//           b = data;
+//           resolve(b);
+//         }
+//       );
+//     });
 
-    const test = await this.browserService.getPageContent(
-      `https://auspost.com.au/mypost/track/details/${code}`
-    );
+//     const test = await this.browserService.getPageContent(
+//       `https://auspost.com.au/mypost/track/details/${code}`
+//     );
 
-    await FileManagerService.saveFile("test.html", test.toString());
+//     await FileManagerService.saveFile("test.html", test.toString());
 
-    console.log("Resolving...");
+//     console.log("Resolving...");
 
-    await responsePromise;
+//     await responsePromise;
 
-    console.log("Resolved...");
+//     console.log("Resolved...");
 
-    return b;
-  }
+//     return b;
+//   }
 
-  async getOrderHistoryEvents(code: string): Promise<IHistoryEvent[]> {
-    const postResponse = await this._getParcelHistory(code);
+//   async getOrderHistoryEvents(code: string): Promise<IHistoryEvent[]> {
+//     const postResponse = await this._getParcelHistory(code);
 
-    if (!postResponse) {
-      return [];
-    }
+//     if (!postResponse) {
+//       return [];
+//     }
 
-    return this._formatResponse(postResponse);
-  }
-}
+//     return this._formatResponse(postResponse);
+//   }
+// }
