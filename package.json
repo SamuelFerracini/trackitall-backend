@@ -2,10 +2,11 @@
   "name": "trackitall-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "src/api/index.ts",
+  "main": "src/server.ts",
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node-dev -r dotenv/config src/api/index.ts"
+    "dev": "ts-node-dev -r dotenv/config src/server.ts",
+    "vercel-build": "echo hello"
   },
   "keywords": [],
   "author": "",
