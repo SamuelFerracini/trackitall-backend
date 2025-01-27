@@ -38,6 +38,10 @@ export default class AusPostProvider extends BaseCourier {
   }
 
   _formatResponse(response: IResponse): IHistoryEvent[] {
+    if (!response.articles) {
+      return [];
+    }
+
     const [article] = response.articles;
 
     const [detail] = article.details;
@@ -55,14 +59,33 @@ export default class AusPostProvider extends BaseCourier {
   }
 
   async _getParcelHistory(code: string): Promise<IResponse | null> {
-    const res = await FileManagerService.readFile("./aupost-example.json");
+    await this.browserService.initialize();
 
-    if (!res) {
-      return null;
-    }
+    let b: IResponse | null = null;
 
-    // TODO - Make request
-    return JSON.parse(res?.toString());
+    const responsePromise = new Promise<IResponse | null>((resolve) => {
+      this.browserService.setupResponseListener(
+        `https://digitalapi.auspost.com.au/shipments-gateway/v1/watchlist/shipments/${code}`,
+        (data) => {
+          b = data;
+          resolve(b);
+        }
+      );
+    });
+
+    const test = await this.browserService.getPageContent(
+      `https://auspost.com.au/mypost/track/details/${code}`
+    );
+
+    await FileManagerService.saveFile("test.html", test.toString());
+
+    console.log("Resolving...");
+
+    await responsePromise;
+
+    console.log("Resolved...");
+
+    return b;
   }
 
   async getOrderHistoryEvents(code: string): Promise<IHistoryEvent[]> {
