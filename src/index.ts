@@ -22,6 +22,10 @@ async function setup() {
     legacyHeaders: false, // Disable X-RateLimit-* headers
   });
 
+  app.get("/", (_, res) => {
+    res.send("Express Typescript on Vercel");
+  });
+
   app.use(limiter);
 
   registerRoutes(app);
