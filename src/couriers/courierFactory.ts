@@ -6,7 +6,7 @@ import JteExpress from "./jteExpress";
 export class CourierFactory {
   static make(type: CourierType): BaseCourier {
     const instance = {
-      [CourierType.AUSPOST]: new AusPostProvider(),
+      [CourierType.AUSPOST]: null,
       [CourierType.JTEXPRESS]: new JteExpress(),
     }[type];
 
