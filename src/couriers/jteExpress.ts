@@ -1,5 +1,4 @@
 import AxiosService from "../services/axiosService";
-import FileManager from "../services/fileManagerService";
 import BaseCourier, { IHistoryEvent } from "./baseCourier";
 
 interface IReponseDataDetail {

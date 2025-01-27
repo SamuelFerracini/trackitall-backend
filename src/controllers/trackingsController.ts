@@ -3,7 +3,7 @@ import TrackingService from "../services/trackingService";
 import OrderService from "../services/orderService";
 import BaseController from "./baseController";
 import TrackingTransformer from "../transformers/trackingTransformer";
-import FetchTrackingOrderHistoryJob from "../jobs/FetchTrackingOrderHistoryJob";
+import FetchTrackingOrderHistoryJob from "../jobs/fetchTrackingOrderHistoryJob";
 import { IOrder } from "../models/order";
 
 class TrackingsController extends BaseController {
@@ -15,6 +15,7 @@ class TrackingsController extends BaseController {
     if (!tracking) {
       this.notFound(res);
       return;
+      ``;
     }
 
     this.jsonResponse(res, TrackingTransformer.transform(tracking));
