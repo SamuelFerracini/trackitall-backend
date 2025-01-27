@@ -3,7 +3,7 @@ import { ITracking } from "../models/tracking";
 import { FilterQuery } from "mongoose";
 import { generateUniqueCode } from "../helpers/helper";
 
-class TrackingService {
+export class TrackingService {
   async create(orders: string[]): Promise<ITracking | undefined> {
     const found = await TrackingRepository.getOne({ orders });
     if (found) return found;
@@ -39,5 +39,3 @@ class TrackingService {
     });
   }
 }
-
-export default new TrackingService();

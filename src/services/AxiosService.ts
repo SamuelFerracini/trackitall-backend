@@ -5,7 +5,7 @@ interface AxiosServiceOptions {
   defaultHeaders?: Record<string, string>;
 }
 
-class AxiosService {
+export class AxiosService {
   private instance: AxiosInstance;
 
   constructor({ baseURL = "", defaultHeaders = {} }: AxiosServiceOptions = {}) {
@@ -141,5 +141,3 @@ class AxiosService {
     this.instance.defaults.timeout = timeout;
   }
 }
-
-export default AxiosService;

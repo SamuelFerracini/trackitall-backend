@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import TrackingService from "../services/trackingService";
+import { TrackingService } from "../services/trackingService";
 import OrderService from "../services/orderService";
 import BaseController from "./baseController";
 import TrackingTransformer from "../transformers/trackingTransformer";
@@ -7,10 +7,17 @@ import FetchTrackingOrderHistoryJob from "../jobs/fetchTrackingOrderHistoryJob";
 import { IOrder } from "../models/order";
 
 class TrackingsController extends BaseController {
+  private trackingService: TrackingService;
+
+  constructor() {
+    super();
+    this.trackingService = new TrackingService();
+  }
+
   async getTracking(req: Request, res: Response): Promise<void> {
     const { reference } = req.params;
 
-    const tracking = await TrackingService.getOne({ reference });
+    const tracking = await this.trackingService.getOne({ reference });
 
     if (!tracking) {
       this.notFound(res);
@@ -22,7 +29,7 @@ class TrackingsController extends BaseController {
   }
 
   async getTrackings(_: Request, res: Response): Promise<void> {
-    const trackings = await TrackingService.getMany();
+    const trackings = await this.trackingService.getMany();
 
     this.jsonResponse(res, TrackingTransformer.transformCollection(trackings));
   }
@@ -34,7 +41,7 @@ class TrackingsController extends BaseController {
 
     const orderIds = savedOrders.map((o) => o._id as string);
 
-    const tracking = await TrackingService.create(orderIds);
+    const tracking = await this.trackingService.create(orderIds);
 
     if (!tracking) {
       // TODO - Improve
@@ -54,7 +61,7 @@ class TrackingsController extends BaseController {
       throw new Error("Reference is required.");
     }
 
-    const tracking = await TrackingService.getOne({ reference });
+    const tracking = await this.trackingService.getOne({ reference });
 
     if (!tracking) {
       throw new Error("Tracking not found.");
@@ -62,7 +69,7 @@ class TrackingsController extends BaseController {
 
     await FetchTrackingOrderHistoryJob.execute(tracking.orders as IOrder[]);
 
-    const updated = await TrackingService.getOne({ reference });
+    const updated = await this.trackingService.getOne({ reference });
 
     if (!updated) {
       throw new Error("Tracking not found.");

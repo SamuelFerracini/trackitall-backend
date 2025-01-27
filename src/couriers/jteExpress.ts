@@ -1,4 +1,4 @@
-import AxiosService from "../services/axiosService";
+import { AxiosService } from "../services/axiosService";
 import BaseCourier, { IHistoryEvent } from "./baseCourier";
 
 interface IReponseDataDetail {
